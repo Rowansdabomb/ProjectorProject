@@ -8,7 +8,7 @@ import argparse
 import imutils
 import time
 import cv2
-import initializeColor, captureColor, detectFaces from helpers
+from helpers import initializeColor, captureColor, detectFaces
  
 ####################### HANDLE ARGUMENTS ##########################
 
