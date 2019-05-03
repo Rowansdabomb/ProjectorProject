@@ -1,3 +1,11 @@
+import numpy as np
+import time
+import cv2
+
+# globals
+font = cv2.FONT_HERSHEY_PLAIN
+lineType = cv2.LINE_AA
+
 def initializeColor(mean, frame):
   # left, top, right, bottom
   size = 75
@@ -8,7 +16,7 @@ def initializeColor(mean, frame):
 
   cv2.rectangle(frame, (c1, r1), (c1+size, r1 + size), (255, 255, 255), 1)
   mean = cv2.mean(roi)
-  cv2.rectangle(frame, (frame.shape[1] - 200, frame.shape[0]-200), (frame.shape[1], frame.shape[0]), mean, -1)
+  cv2.rectangle(frame, (frame.shape[1] - int(frame.shape[1] / 10), frame.shape[0] - int(frame.shape[1] / 10)), (frame.shape[1], frame.shape[0]), mean, -1)
 
   text = "Press 's' key to capture colour" 
   # get boundary of this text
@@ -49,7 +57,7 @@ def captureColor(mean, colorUpper, colorLower):
 
   return mean, colorUpper, colorLower
 
-def detectFaces(net):
+def detectFaces(net, frame, confidenceThreshold):
   # grab the frame dimensions and convert it to a blob
   (h, w) = frame.shape[:2]
   blob = cv2.dnn.blobFromImage(cv2.resize(frame, (300, 300)), 1.0,
@@ -60,6 +68,8 @@ def detectFaces(net):
   net.setInput(blob)
   detections = net.forward()
 
+  faceMask = np.ones((frame.shape[0], frame.shape[1]), np.uint8)
+
   # loop over the detections
   for i in range(0, detections.shape[2]):
     # extract the confidence (i.e., probability) associated with the
@@ -68,7 +78,7 @@ def detectFaces(net):
 
     # filter out weak detections by ensuring the `confidence` is
     # greater than the minimum confidence
-    if confidence < args["confidence"]:
+    if confidence < confidenceThreshold:
       continue
 
     # compute the (x, y)-coordinates of the bounding box for the
@@ -77,7 +87,6 @@ def detectFaces(net):
     (startX, startY, endX, endY) = face.astype("int")
     center = (int(startX + (endX - startX)/2), int(startY + (endY - startY)/2))
     
-    faceMask = np.ones((frame.shape[0], frame.shape[1]), np.uint8)
     # draw a circle around the persons head
     cv2.circle(faceMask, center, int((endX - startX) / 2), 255, -1)
   

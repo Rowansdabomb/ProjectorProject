@@ -37,10 +37,8 @@ net = cv2.dnn.readNetFromCaffe(args["prototxt"], args["model"])
 camera = PiCamera()
 resolution = (320, 240)
 camera.resolution = resolution
-camera.framerate = 32
-rawCapture - PiRGBArray(camera, size=resolution)
-stream = camera.capture_continuous(rawCapture, format="bgr",
-	use_video_port=True)
+rawCapture = PiRGBArray(camera, size=resolution)
+stream = camera.capture_continuous(rawCapture, format="bgr", use_video_port=True)
 
 # allow the camera or video file to warm up
 time.sleep(2.0)
@@ -52,9 +50,6 @@ fps = FPS().start()
 
 initialized = False
 mean = None
-
-font = cv2.FONT_HERSHEY_PLAIN
-lineType = cv2.LINE_AA
 
 frame = None
 overlay = None
@@ -77,7 +72,7 @@ for (i, f) in enumerate(stream):
   frame = f.array
   frame = imutils.resize(frame, width=400)
 
-  faceMask = detectFaces(net)
+##  faceMask = detectFaces(net, frame, args["confidence"])
 
   if not initialized:
     mean, frame = initializeColor(mean, frame)
@@ -90,7 +85,6 @@ for (i, f) in enumerate(stream):
   # a series of dilations and erosions to remove any small
   # blobs left in the mask
   mask = cv2.inRange(hsv, colorLower, colorUpper)
-  cv2.imshow("inrange: ", mask)
   mask = cv2.erode(mask, None, iterations=2)
   mask = cv2.dilate(mask, None, iterations=2)
 
@@ -126,10 +120,9 @@ for (i, f) in enumerate(stream):
       # create a historical mask
       overlay = cv2.bitwise_or(overlay, currentMask)
 
-    # # c2.imshow("mask", overlay)
-    temp = cv2.bitwise_or(cv2.bitwise_not(overlay), faceMask)
+    ##    temp = cv2.bitwise_or(cv2.bitwise_not(overlay), faceMask)
+    temp = cv2.bitwise_not(overlay)
     final = cv2.bitwise_not(cv2.cvtColor(temp, cv2.COLOR_GRAY2BGR))
-    cv2.imshow("overlay", final)
     frame = cv2.addWeighted(final, 1, frame, 1, -255)
 
   cv2.imshow("Frame", frame)
