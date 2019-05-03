@@ -72,10 +72,10 @@ screenWidth = 900
 
 # loop over some frames
 for (i, f) in enumerate(stream):
-	# grab the frame from the stream and resize it to have a maximum
-	# width of 400 pixels
-	frame = f.array
-	frame = imutils.resize(frame, width=400)
+  # grab the frame from the stream and resize it to have a maximum
+  # width of 400 pixels
+  frame = f.array
+  frame = imutils.resize(frame, width=400)
 
   faceMask = detectFaces(net)
 
@@ -93,7 +93,7 @@ for (i, f) in enumerate(stream):
   cv2.imshow("inrange: ", mask)
   mask = cv2.erode(mask, None, iterations=2)
   mask = cv2.dilate(mask, None, iterations=2)
-  
+
   # find contours in the mask and initialize the current
   # (x, y) center of the ball
   cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -118,7 +118,7 @@ for (i, f) in enumerate(stream):
       # then update the list of tracked points
       currentMask = np.ones((frame.shape[0], frame.shape[1]), np.uint8)
       cv2.circle(currentMask, (int(x), int(y)), int(radius), 255, -1)
-  
+
   if initialized:
     if overlay is None:
       overlay = mask
@@ -145,10 +145,10 @@ for (i, f) in enumerate(stream):
     mean, colorUpper, colorLower = captureColor(mean, colorUpper, colorLower)
     initialized = True
 
-	# clear the stream in preparation for the next frame and update
-	# the FPS counter
-	rawCapture.truncate(0)
-	fps.update()
+  # clear the stream in preparation for the next frame and update
+  # the FPS counter
+  rawCapture.truncate(0)
+  fps.update()
 
 # stop the timer and display FPS information
 fps.stop()
